@@ -394,11 +394,12 @@ def send_feedback():
         
         if st.form_submit_button("Submit"):
             # Save data to Google Sheets
-            if selected_rating is not None:
-                save_feedback_to_google_sheets(name, rating[selected_rating], feedback, st.session_state.messages)
-                st.success("Terimakasih atas umpan balik anda!")
-            else:
-                st.error("Tolong berikan rating 🙏")
+            # if selected_rating is not None:
+            #     save_feedback_to_google_sheets(name, rating[selected_rating], feedback, st.session_state.messages)
+            #     st.success("Terimakasih atas umpan balik anda!")
+            # else:
+            #     st.error("Tolong berikan rating 🙏")
+            print("INI FEEDBACK: ", feedback)
 
 def stream_response(response, delay=0.02):
     for res in response:
