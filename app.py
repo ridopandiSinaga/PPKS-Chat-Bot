@@ -4,6 +4,7 @@ import json
 import streamlit as st
 import gspread
 import time
+import pytz
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 from langchain_core.runnables import (
@@ -117,9 +118,9 @@ def save_feedback_to_google_sheets(name, rating, feedback, chat_message):
         conversation = f"""
 {comma.join([_chat for _chat in chats])}
 """
-    print(conversation)
+    # print(conversation)
     # Append the feedback
-    sheet.append_row([datetime.now().strftime("%Y-%m-%d %H:%M:%S"), name, rating, feedback, conversation])
+    sheet.append_row([datetime.now(pytz.timezone("Asia/Jakarta")).strftime("%Y-%m-%d %H:%M:%S"), name, rating, feedback, conversation])
 
 # Load knowledge graph fron neo4j
 @st.cache_resource
