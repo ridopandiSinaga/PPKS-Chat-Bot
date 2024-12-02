@@ -224,7 +224,7 @@ def retriever(question: str):
     structured_data = structured_retriever(question)
     unstructured_data = retrieve_context_by_vector(question)
     # references = []
-    print(unstructured_data)
+    # print(unstructured_data)
 #     for doc in unstructured_data:
 #         references.append(
 # f"""
@@ -243,7 +243,7 @@ Unstructured data:
 {new_line.join([context.page_content for context in unstructured_data])}
 
 """
-    print(final_data)
+    # print(final_data)
     return final_data
 
 # Reference:
