@@ -483,3 +483,6 @@ if prompt:
     if len(st.session_state.chat_history) > 3:
         st.session_state.chat_history = st.session_state.chat_history[-3:]
 
+    # Cetak session ID
+    st.write("Session ID:", st.session_state.session_id)
+
