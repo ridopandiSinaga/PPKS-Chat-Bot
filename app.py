@@ -482,7 +482,8 @@ if prompt:
     # Just use 3 latest chat to chat history
     if len(st.session_state.chat_history) > 3:
         st.session_state.chat_history = st.session_state.chat_history[-3:]
-
+    
     # Cetak session ID
+    import uuid
     st.write("Session ID:", st.session_state.session_id)
 
