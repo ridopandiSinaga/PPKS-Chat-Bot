@@ -91,7 +91,7 @@ def connect_to_google_sheets():
     ]
     # Authenticate credentials
     credentials_dict = st.secrets["gspread_credential"]
-    creds = ServiceAccountCredentials.from_json_keyfile_name(credentials_dict, scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials_dict, scope)
     client = gspread.authorize(creds)
     return client
 
