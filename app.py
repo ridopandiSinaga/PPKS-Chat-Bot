@@ -90,7 +90,8 @@ def connect_to_google_sheets():
         "https://www.googleapis.com/auth/drive"
     ]
     # Authenticate credentials
-    creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
+    credentials_dict = st.secrets["gspread_credential"]
+    creds = ServiceAccountCredentials.from_json_keyfile_name(credentials_dict, scope)
     client = gspread.authorize(creds)
     return client
 
