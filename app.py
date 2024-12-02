@@ -385,13 +385,14 @@ chain = (
 
 @st.dialog("Berikan Feedback")
 def send_feedback():
-    with st.form(key="feedback_input", enter_to_submit=False, clear_on_submit=True):
+    with st.form(key="feedback_input", enter_to_submit=False, clear_on_submit=False):
         name = st.text_input("Nama (opsional)")
 
         rating = [1, 2, 3, 4, 5]
         selected_rating = st.feedback(options="stars")
         feedback = st.text_area("Feedback")
-        
+
+        print("INI FEEDBACK: ", feedback)
         if st.form_submit_button("Submit"):
             # Save data to Google Sheets
             # if selected_rating is not None:
