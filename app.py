@@ -473,3 +473,8 @@ if prompt:
 
     # Saving user and llm response to chat history
     st.session_state.chat_history.append((prompt, response))
+
+    # Just use 3 latest chat to chat history
+    if len(st.session_state.chat_history) > 3:
+        st.session_state.chat_history = st.session_state.chat_history[-3:]
+
