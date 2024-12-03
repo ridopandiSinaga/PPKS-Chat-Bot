@@ -5,6 +5,7 @@ import streamlit as st
 import gspread
 import time
 import pytz
+import uuid
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 from langchain_core.runnables import (
@@ -37,8 +38,12 @@ st.set_page_config(
     layout="centered",
 )
 
+
 # Load environtment app
 load_dotenv()
+
+# Start Counter
+start_counter = time.perf_counter()
 
 # Setup a session state to hold up all the old messages
 if 'messages' not in st.session_state:
@@ -59,6 +64,12 @@ if 'conversion_done' not in st.session_state:
 if 'conversion_running' not in st.session_state:
     st.session_state.conversion_running = None
 
+if 'idx_llm' not in st.session_state:
+    st.session_state['idx_llm'] = 0
+
+if 'total_time' not in st.session_state:
+    st.session_state['total_time'] = 0
+
 # st.write(st.session_state.convert_status)
 if st.session_state.conversion_done is not None:
     if st.session_state.conversion_done:
@@ -76,12 +87,32 @@ if st.session_state.conversion_done is not None:
 
 # Load llm model using Groq
 @st.cache_resource
-def load_llm_groq():
+def load_llm_groq(KEY):
     return ChatGroq(
         model='llama-3.1-70b-versatile', #llama-3.1-70b-versatile, llama-3.1-8b-instant
         temperature=0,
+        api_key=KEY
     )
-llm_groq = load_llm_groq()
+
+llms = [load_llm_groq(st.secrets['groq_key']['groq_1']), load_llm_groq(st.secrets['groq_key']['groq_2']), load_llm_groq(st.secrets['groq_key']['groq_3'])]
+
+
+if st.session_state['total_time'] / 50.0 > 1:
+    st.session_state['total_time'] = 0
+
+    if st.session_state['idx_llm'] == 0:
+        llm_groq = llms[st.session_state['idx_llm']+1]
+        st.session_state['idx_llm'] = 1
+    elif st.session_state['idx_llm'] == 1:
+        llm_groq = llms[st.session_state['idx_llm']+1]
+        st.session_state['idx_llm'] = 2
+    else:
+        llm_groq = llms[0]
+        st.session_state['idx_llm'] = 0
+    
+else :
+    llm_groq = llms[st.session_state['idx_llm']]
+
 
 @st.cache_resource
 def connect_to_google_sheets():
@@ -309,10 +340,10 @@ Example 4 (Topic Shift):
 - AI: "Apple's revenue is $274.5 billion."
 
 **Latest Question:**  
-User: "What is its revenue?"
+User: "What is his revenue?"
 
 **Paraphrased Question:**  
-"What is the revenue of CEO Microsoft?"
+"What is the revenue of CEO Apple?"
 
 ---
 
@@ -383,42 +414,34 @@ chain = (
     | StrOutputParser()
 )
 
+def store_text_area_value():
+    st.write(st.session_state['feedback'])
+
+
 @st.dialog("Berikan Feedback")
 def send_feedback():
     with st.form(key="feedback_input", enter_to_submit=False, clear_on_submit=False):
-        name = st.text_input("Nama (opsional)")
+        name = st.text_input("Nama")
+        feedback = st.text_area("Feedback")
 
         rating = [1, 2, 3, 4, 5]
         selected_rating = st.feedback(options="stars")
-        feedback = st.text_area("Feedback")
 
-        st.write(feedback)
         # print("INI FEEDBACK: ", feedback)
         if st.form_submit_button("Submit"):
             # Save data to Google Sheets
-            # if selected_rating is not None:
-            #     save_feedback_to_google_sheets(name, rating[selected_rating], feedback, st.session_state.messages)
-            #     st.success("Terimakasih atas umpan balik anda!")
-            # else:
-            #     st.error("Tolong berikan rating 🙏")
-            # print("INI FEEDBACK: ", feedback)
+            if selected_rating is not None:
+                save_feedback_to_google_sheets(name, rating[selected_rating], feedback, st.session_state.messages)
+                st.success("Terimakasih atas umpan balik anda!")
+            else:
+                st.error("Tolong berikan rating 🙏")
+            print("INI FEEDBACK: ", feedback)
             st.write(feedback)
 
 def stream_response(response, delay=0.02):
     for res in response:
         yield res
         time.sleep(delay)
-
-
-# Create title for chat APP
-# col = st.columns([0.15, 0.85], vertical_alignment="center")
-
-# with col[0]:
-#     st.image(image="./assets/logo-PPKS.png", use_container_width=True)
-# with col[1]:
-#     st.header("| Chat Bot PPKS 🤖")
-
-# st.divider()
 
 with st.expander("ChatBot PPKS", icon=":material/priority_high:", expanded=True):
     st.markdown(body=
@@ -473,17 +496,7 @@ if prompt:
         # Displaying response
         with st.chat_message("assistant", avatar="./assets/logo-PPKS.png"):
             response = st.write_stream(stream_response(response))
-
-        # DEBUG#
-        #  Invoke _search_query with chat history and question
-        _search_result = _search_query.invoke({
-            "chat_history": st.session_state.chat_history, 
-            "question": prompt
-        })
-        # Displaying the result of _search_query in Streamlit
-        st.write("Question parafrased: ", _search_result)
-        #DEBUG#
-        
+    
         # Saving response to chat history in session state
         st.session_state.messages.append({'role' : 'assistant', 'content': response})
     
@@ -491,24 +504,24 @@ if prompt:
         st.session_state.chat_history.append((prompt, response))
     
         # Just use 3 latest chat to chat history
-        st.text_area("CHAT HISTORY: ", st.session_state.chat_history)
         if len(st.session_state.chat_history) > 3:
             st.session_state.chat_history = st.session_state.chat_history[-3:]
+    
+        # Buat session ID jika belum ada
+        if "session_id" not in st.session_state:
+            st.session_state.session_id = str(uuid.uuid4())
+    
+        # Cetak session ID
+        st.write("Session ID:", st.session_state.session_id)
+    
+        end_counter = time.perf_counter()
+    
+        total_time = end_counter - start_counter
+        st.session_state['total_time'] += total_time 
+        st.write(st.session_state['total_time'], st.session_state['idx_llm'])
     except Exception as e:
-        # Memeriksa apakah pesan error mengandung indikasi rate limit
         if 'rate limit' in str(e).lower() or 'too many requests' in str(e).lower():
             st.error("Terjadi limit penggunaan, silakan coba lagi nanti.")
         else:
-            # Menangani error lainnya
             st.error(f"Terjadi error: {e}")
-    
-    # Cetak session ID
-    import uuid
-
-    # Buat session ID jika belum ada
-    if "session_id" not in st.session_state:
-        st.session_state.session_id = str(uuid.uuid4())
-
-    # Cetak session ID
-    st.write("Session ID:", st.session_state.session_id)
-
+        
