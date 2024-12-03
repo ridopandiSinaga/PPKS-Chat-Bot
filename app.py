@@ -463,25 +463,43 @@ if prompt:
     # Saving user prompt to session state
     st.session_state.messages.append({'role' : 'user', 'content': prompt})
 
-    # Getting response from llm model
-    response = chain.stream({
-        "chat_history" : st.session_state.chat_history, 
-        "question" : prompt
-    })
+    try:
+        # Getting response from llm model
+        response = chain.stream({
+            "chat_history" : st.session_state.chat_history, 
+            "question" : prompt
+        })
+    
+        # Displaying response
+        with st.chat_message("assistant", avatar="./assets/logo-PPKS.png"):
+            response = st.write_stream(stream_response(response))
 
-    # Displaying response
-    with st.chat_message("assistant", avatar="./assets/logo-PPKS.png"):
-        response = st.write_stream(stream_response(response))
-
-    # Saving response to chat history in session state
-    st.session_state.messages.append({'role' : 'assistant', 'content': response})
-
-    # Saving user and llm response to chat history
-    st.session_state.chat_history.append((prompt, response))
-
-    # Just use 3 latest chat to chat history
-    if len(st.session_state.chat_history) > 3:
-        st.session_state.chat_history = st.session_state.chat_history[-3:]
+        # DEBUG#
+        #  Invoke _search_query with chat history and question
+        _search_result = _search_query.invoke({
+            "chat_history": st.session_state.chat_history, 
+            "question": prompt
+        })
+        # Displaying the result of _search_query in Streamlit
+        st.text_area("Question parafrased", value=_search_result, height=200)
+        #DEBUG#
+        
+        # Saving response to chat history in session state
+        st.session_state.messages.append({'role' : 'assistant', 'content': response})
+    
+        # Saving user and llm response to chat history
+        st.session_state.chat_history.append((prompt, response))
+    
+        # Just use 3 latest chat to chat history
+        if len(st.session_state.chat_history) > 3:
+            st.session_state.chat_history = st.session_state.chat_history[-3:]
+    except Exception as e:
+        # Memeriksa apakah pesan error mengandung indikasi rate limit
+        if 'rate limit' in str(e).lower() or 'too many requests' in str(e).lower():
+            st.error("Terjadi limit penggunaan, silakan coba lagi nanti.")
+        else:
+            # Menangani error lainnya
+            st.error(f"Terjadi error: {e}")
     
     # Cetak session ID
     import uuid
