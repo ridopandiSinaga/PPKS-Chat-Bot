@@ -6,6 +6,7 @@ import gspread
 import time
 import pytz
 import uuid
+import random
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 from langchain_core.runnables import (
@@ -96,22 +97,22 @@ def load_llm_groq(KEY):
 
 llms = [load_llm_groq(st.secrets['groq_key']['groq_1']), load_llm_groq(st.secrets['groq_key']['groq_2']), load_llm_groq(st.secrets['groq_key']['groq_3'])]
 
+llm_groq = llms[random.randint(0, 2)]
+# if st.session_state['total_time'] / 50.0 > 1:
+#     st.session_state['total_time'] = 0
 
-if st.session_state['total_time'] / 50.0 > 1:
-    st.session_state['total_time'] = 0
-
-    if st.session_state['idx_llm'] == 0:
-        llm_groq = llms[st.session_state['idx_llm']+1]
-        st.session_state['idx_llm'] = 1
-    elif st.session_state['idx_llm'] == 1:
-        llm_groq = llms[st.session_state['idx_llm']+1]
-        st.session_state['idx_llm'] = 2
-    else:
-        llm_groq = llms[0]
-        st.session_state['idx_llm'] = 0
+#     if st.session_state['idx_llm'] == 0:
+#         llm_groq = llms[st.session_state['idx_llm']+1]
+#         st.session_state['idx_llm'] = 1
+#     elif st.session_state['idx_llm'] == 1:
+#         llm_groq = llms[st.session_state['idx_llm']+1]
+#         st.session_state['idx_llm'] = 2
+#     else:
+#         llm_groq = llms[0]
+#         st.session_state['idx_llm'] = 0
     
-else :
-    llm_groq = llms[st.session_state['idx_llm']]
+# else :
+#     llm_groq = llms[st.session_state['idx_llm']]
 
 
 @st.cache_resource
