@@ -491,6 +491,7 @@ if prompt:
         st.session_state.chat_history.append((prompt, response))
     
         # Just use 3 latest chat to chat history
+        st.text_area("CHAT HISTORY: ", st.session_state.chat_history)
         if len(st.session_state.chat_history) > 3:
             st.session_state.chat_history = st.session_state.chat_history[-3:]
     except Exception as e:
