@@ -481,7 +481,7 @@ if prompt:
             "question": prompt
         })
         # Displaying the result of _search_query in Streamlit
-        st.text_area("Question parafrased", value=_search_result, height=200)
+        st.write("Question parafrased: ", _search_result)
         #DEBUG#
         
         # Saving response to chat history in session state
