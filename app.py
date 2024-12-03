@@ -97,7 +97,8 @@ def load_llm_groq(KEY):
 
 llms = [load_llm_groq(st.secrets['groq_key']['groq_1']), load_llm_groq(st.secrets['groq_key']['groq_2']), load_llm_groq(st.secrets['groq_key']['groq_3'])]
 
-llm_groq = llms[random.randint(0, 2)]
+random_idx = random.randint(0, 2)
+llm_groq = llms[random_idx]
 # if st.session_state['total_time'] / 50.0 > 1:
 #     st.session_state['total_time'] = 0
 
@@ -519,7 +520,7 @@ if prompt:
     
         total_time = end_counter - start_counter
         st.session_state['total_time'] += total_time 
-        st.write(st.session_state['total_time'], st.session_state['idx_llm'])
+        st.write(st.session_state['total_time'], st.session_state['idx_llm'], random_idx)
     except Exception as e:
         if 'rate limit' in str(e).lower() or 'too many requests' in str(e).lower():
             st.error("Terjadi limit penggunaan, silakan coba lagi nanti.")
