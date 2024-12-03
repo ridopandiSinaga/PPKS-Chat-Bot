@@ -436,7 +436,7 @@ def send_feedback():
             else:
                 st.error("Tolong berikan rating 🙏")
             print("INI FEEDBACK: ", feedback)
-            st.write(feedback)
+            # st.write(feedback)
 
 def stream_response(response, delay=0.02):
     for res in response:
