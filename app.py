@@ -268,8 +268,7 @@ def retriever(question: str):
 
     nl = "\n---\n"
     new_line = "\n"
-    final_data =
-f"""
+    final_data =f"""
 Structured data:
 {structured_data}
 
