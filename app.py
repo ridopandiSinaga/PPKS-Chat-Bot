@@ -229,8 +229,6 @@ def generate_full_text_query(input: str) -> str:
 def structured_retriever(question: str) -> str:
     result = ""
     entities = entity_chain.invoke({"question": question})
-    print("question : ", question)
-    print("entities : ", entities)
     for entity in entities.names:
         response = graph.query(
            """CALL db.index.fulltext.queryNodes('entity', $query, {limit:2})
@@ -247,6 +245,12 @@ def structured_retriever(question: str) -> str:
             {"query": generate_full_text_query(entity)},
         )
         result += "\n".join([el['output'] for el in response])
+
+    print("="*32)
+    print("question : ", question)
+    print("entities : ", entities)
+    print("="*32)
+    
     return result
 
 def retrieve_context_by_vector(question):
@@ -276,7 +280,7 @@ Unstructured data:
 {new_line.join([context.page_content for context in unstructured_data])}
 
 """
-    print(final_data)
+    # print(final_data)
     return final_data
 
 # Reference:
