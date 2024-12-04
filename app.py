@@ -7,6 +7,7 @@ import time
 import pytz
 import uuid
 import random
+import streamlit.components.v1 as components
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 from langchain_core.runnables import (
@@ -531,22 +532,11 @@ if prompt:
             st.error(f"Terjadi error: {e}")
 
 # Hide footer logo
-# CSS untuk mengganti konten footer
-custom_footer = """
+# CSS untuk menyembunyikan menu utama dan footer
+hide_streamlit_style = """
     <style>
-    footer:after {
-        content:'© Copyright 2024. Pusat Penelitian Kelapa Sawit';
-        visibility: visible;
-        display: block;
-        position: relative;
-        padding: 5px;
-        top: 2px;
-        color: gray;
-        font-size: 12px;
-    }
-    footer {
-        visibility: hidden;
-    }
+    #MainMenu {display: none;}
+    footer {display: none;}
     </style>
     """
-st.markdown(custom_footer, unsafe_allow_html=True)
+components.html(hide_streamlit_style)
