@@ -229,7 +229,8 @@ def generate_full_text_query(input: str) -> str:
 def structured_retriever(question: str) -> str:
     result = ""
     entities = entity_chain.invoke({"question": question})
-    print(entities)
+    print("question : ", question)
+    print("entities : ", entities)
     for entity in entities.names:
         response = graph.query(
            """CALL db.index.fulltext.queryNodes('entity', $query, {limit:2})
@@ -267,8 +268,8 @@ def retriever(question: str):
 
     nl = "\n---\n"
     new_line = "\n"
-    final_data = f"""
-
+    final_data =
+f"""
 Structured data:
 {structured_data}
 
@@ -276,7 +277,7 @@ Unstructured data:
 {new_line.join([context.page_content for context in unstructured_data])}
 
 """
-    # print(final_data)
+    print(final_data)
     return final_data
 
 # Reference:
@@ -437,7 +438,7 @@ def send_feedback():
                 st.success("Terimakasih atas umpan balik anda!")
             else:
                 st.error("Tolong berikan rating 🙏")
-            print("INI FEEDBACK: ", feedback)
+            # print("INI FEEDBACK: ", feedback)
             # st.write(feedback)
 
 def stream_response(response, delay=0.02):
