@@ -229,10 +229,9 @@ def generate_full_text_query(input: str) -> str:
 def structured_retriever(question: str) -> str:
     result = ""
     entities = entity_chain.invoke({"question": question})
-    print("="*32)
+
     print("question : ", question)
     print("entities : ", entities)
-    print("="*32)
 
     for entity in entities.names:
         response = graph.query(
