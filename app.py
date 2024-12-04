@@ -531,10 +531,22 @@ if prompt:
             st.error(f"Terjadi error: {e}")
 
 # Hide footer logo
-hide_streamlit_style = """
-            <style>
-            [data-testid="stToolbar"] {visibility: hidden !important;}
-            footer {visibility: hidden !important;}
-            </style>
-            """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+# CSS untuk mengganti konten footer
+custom_footer = """
+    <style>
+    footer:after {
+        content:'© Copyright 2024. Pusat Penelitian Kelapa Sawit';
+        visibility: visible;
+        display: block;
+        position: relative;
+        padding: 5px;
+        top: 2px;
+        color: gray;
+        font-size: 12px;
+    }
+    footer {
+        visibility: hidden;
+    }
+    </style>
+    """
+st.markdown(custom_footer, unsafe_allow_html=True)
