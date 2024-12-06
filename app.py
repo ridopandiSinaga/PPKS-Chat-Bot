@@ -254,33 +254,45 @@ def structured_retriever(question: str) -> str:
     return result
 
 def retrieve_context_by_vector(question):
-    return [el for el in vector_index.similarity_search(question, k=2)]
+    return [el for el in vector_index.similarity_search(question, k=4)]
 
 # Retrival knowledge
 def retriever(question: str):
     # print(f"Search query: {question}")
     structured_data = structured_retriever(question)
     unstructured_data = retrieve_context_by_vector(question)
-    # references = []
-    # print(unstructured_data)
-#     for doc in unstructured_data:
-#         references.append(
-# f"""
-# Reference: **{doc.metadata['source']}**, {doc.metadata['section']}, Halaman {doc.metadata['page']}
-# {doc.page_content}    
-# """)
+
+    documents = []
+    
+    for doc in unstructured_data:
+        sections = ""
+
+        for key, value in doc.metadata.items() :
+            sections += f"{key} - {value}\n"
+        
+        documents.append(
+            f"""
+Section :
+{sections}
+Content :
+{doc.page_content.replace("text: ", "")}
+"""
+        )
 
     nl = "\n---\n"
     new_line = "\n"
-    final_data =f"""
+    final_data = f"""
+
 Structured data:
 {structured_data}
 
+
 Unstructured data:
-{new_line.join([context.page_content for context in unstructured_data])}
+{nl.join(documents)}
 
 """
-    # print(final_data)
+
+    print(final_data)
     return final_data
 
 # Reference:
