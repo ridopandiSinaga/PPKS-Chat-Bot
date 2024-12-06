@@ -165,12 +165,13 @@ graph = load_knowledge_graph()
 
 @st.cache_resource
 def create_vector_space_from_graph():
+
     vector_index = Neo4jVector.from_existing_graph(
-        NomicEmbeddings(model="nomic-embed-text-v1.5"),
+        JinaEmbeddings(model="jina-clip-v2"),
         search_type="hybrid",
         node_label="Document",
         text_node_properties=["text"],
-        embedding_node_property="embedding"
+        embedding_node_property="embedding",
     )
 
     return vector_index
