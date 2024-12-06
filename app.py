@@ -26,13 +26,14 @@ from langchain_community.vectorstores import Neo4jVector
 from langchain_community.graphs import Neo4jGraph
 from neo4j import GraphDatabase
 from typing import Tuple, List, Optional
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 from langchain_community.vectorstores.neo4j_vector import remove_lucene_chars
 from langchain_nomic import NomicEmbeddings
 from langchain_ollama import ChatOllama
 from langchain_groq import ChatGroq
 from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
+from langchain_community.embeddings import JinaEmbeddings
 
 st.set_page_config(
     page_title="PPKS | Chat Bot",
